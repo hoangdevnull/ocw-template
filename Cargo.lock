@@ -6262,23 +6262,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "offchain-utils"
-version = "0.1.0"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "serde_json",
- "sp-core",
- "sp-io",
- "sp-runtime",
-]
-
-[[package]]
 name = "oid-registry"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7088,7 +7071,6 @@ dependencies = [
  "frame-system",
  "lite-json",
  "log",
- "offchain-utils",
  "parity-scale-codec",
  "scale-info",
  "sp-core",

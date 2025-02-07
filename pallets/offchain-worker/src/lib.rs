@@ -54,12 +54,9 @@ pub mod pallet {
     use super::*;
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*, DefaultNoBound};
     use frame_system::pallet_prelude::*;
-    use offchain_utils::offchain_api_key::OffchainApiKey;
     use scale_info::prelude::string::String;
     use sp_runtime::offchain::http;
 
-    pub struct CustomApiKeyFetcher;
-    impl OffchainApiKey for CustomApiKeyFetcher {}
 
     #[pallet::pallet]
     pub struct Pallet<T>(_);
@@ -129,17 +126,7 @@ pub mod pallet {
     }
 
     impl<T: Config> Pallet<T> {
-        fn get_api_key() -> Result<String, http::Error> {
-            let api_key = match CustomApiKeyFetcher::fetch_api_key_for_request("pricing_api_key") {
-                Ok(key) => key,
-                Err(err) => {
-                    log::error!("Failed to fetch API key: {}", err);
-                    return Err(http::Error::Unknown);
-                }
-            };
-
-            Ok(api_key)
-        }
+      
     }
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
@@ -159,11 +146,6 @@ pub mod pallet {
             // all logging and thus, remove any logging from the WASM.
             log::trace!(target: "logger", "offchain worker is working!");
             log::trace!(target: "logger", "Ping from offchain workers!");
-
-            // Retrieve the API key from offchain storage
-            let api_key = Self::get_api_key().unwrap();
-
-            log::info!("API key retrieved from offchain storage {}", &api_key);
 
             // Since off-chain workers are just part of the runtime code, they have direct access
             // to the storage and other included pallets.
