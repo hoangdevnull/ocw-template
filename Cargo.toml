@@ -6,12 +6,13 @@ repository = "https://github.com/paritytech/polkadot-sdk-parachain-template.git"
 edition = "2021"
 
 [workspace]
-members = ["node", "pallets/template", "runtime"]
+members = ["node", "pallets/template", "runtime", "offchain-utils", "pallets/offchain-worker"]
 resolver = "2"
 
 [workspace.dependencies]
 parachain-template-runtime = { path = "./runtime", default-features = false }
 pallet-parachain-template = { path = "./pallets/template", default-features = false }
+pallet-offchain-worker = { path = "./pallets/offchain-worker", default-features = false }
 clap = { version = "4.5.10" }
 codec = { version = "3.6.12", default-features = false, package = "parity-scale-codec" }
 color-print = { version = "0.3.4" }
@@ -106,3 +107,4 @@ sp-version = { version = "37.0.0", default-features = false }
 xcm-builder = { version = "17.0.0", default-features = false, package = "staging-xcm-builder" }
 xcm-executor = { version = "17.0.0", default-features = false, package = "staging-xcm-executor" }
 substrate-wasm-builder = { version = "24.0.1", default-features = false }
+lite-json = { version = "0.2.0", default-features = false }
