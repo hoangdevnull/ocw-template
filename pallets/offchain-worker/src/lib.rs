@@ -56,7 +56,6 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use offchain_utils::offchain_api_key::OffchainApiKey;
     use scale_info::prelude::string::String;
-    use sp_runtime::offchain::http;
 
     pub struct CustomApiKeyFetcher;
     impl OffchainApiKey for CustomApiKeyFetcher {}
@@ -129,16 +128,14 @@ pub mod pallet {
     }
 
     impl<T: Config> Pallet<T> {
-        fn get_api_key() -> Result<String, http::Error> {
-            let api_key = match CustomApiKeyFetcher::fetch_api_key_for_request("pricing_api_key") {
-                Ok(key) => key,
+        fn get_api_key() -> Result<String, &'static str> {
+            match CustomApiKeyFetcher::fetch_api_key_for_request("pricing_api_key") {
+                Ok(key) => Ok(key),
                 Err(err) => {
-                    log::error!("Failed to fetch API key: {}", err);
-                    return Err(http::Error::Unknown);
+                    log::error!("Failed to fetch API key: {:?}", err); // Use {:?} for Debug representation
+                    Err("API key not found in offchain storage")
                 }
-            };
-
-            Ok(api_key)
+            }
         }
     }
     #[pallet::hooks]
@@ -160,11 +157,16 @@ pub mod pallet {
             log::trace!(target: "logger", "offchain worker is working!");
             log::trace!(target: "logger", "Ping from offchain workers!");
 
-            // Retrieve the API key from offchain storage
-            let api_key = Self::get_api_key().unwrap();
-
-            log::info!("API key retrieved from offchain storage {}", &api_key);
-
+            // Attempt to retrieve the API key
+            match Self::get_api_key() {
+                Ok(api_key) => {
+                    log::info!("API key retrieved: {}", api_key);
+                }
+                Err(e) => {
+                    log::error!("Offchain worker error: {:?}", e); // Use {:?} for Debug representation
+                    return; // Exit early if API key is missing
+                }
+            }
             // Since off-chain workers are just part of the runtime code, they have direct access
             // to the storage and other included pallets.
             //
